@@ -33,8 +33,8 @@ trap alldone exit
 # so we don't throw away the one-time enrollment token
 
 IDENTITIES_DIR="/ziti-edge-tunnel"
-if ! mountpoint "${IDENTITIES_DIR}" &>/dev/null; then
-    echo "ERROR: please run this container with a volume mounted on ${IDENTITIES_DIR}" >&2
+if ! [[ -d "${IDENTITIES_DIR}" ]]; then
+    echo "ERROR: need directory ${IDENTITIES_DIR} to find tokens and identities" >&2
     exit 1
 fi
 
@@ -97,13 +97,11 @@ else
     fi
 fi
 
-if (( ${#} )); then
-    if [[ ${1:0:3} == run ]]; then
-        TUNNEL_MODE=${1}
-        shift
-    fi
+if (( ${#} )) && [[ ${1:0:3} == run ]]; then
+    TUNNEL_RUN_MODE=${1}
+    shift
 else
-    TUNNEL_MODE=run
+    TUNNEL_RUN_MODE=run
 fi
 
 echo "INFO: running ziti-edge-tunnel"
